@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 
+#define DEBUG
+
 /*
 fpart -s 644245094 -o fpart_test /home/florian/data/Bilder/
 tar -cvzf fparttest1.tar.gz -T fpart_test.1
@@ -15,16 +17,17 @@ mkisofs -V Backup -volset 1 -r -o fparttest.iso fparttest*
 dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
 */
 
-/* TODO
--- Figure out how to handle partition 0 with fparts
 
-
-*/
 
 using namespace std;
 
+//TODO Add another directory to backup to
 string backupDir = "/home/florian/data/Bilder";
-string outputFileForFpart = "/home/florian/data/Bilder/fpart_test";
+string backupSaveDir = "/home/florian/data/tmp";
+string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
+string tar_file = "Archive";
+string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
+
 int numberOfFpartFiles;
 
 int fpart()
@@ -34,6 +37,7 @@ int fpart()
     string size = "644245094";
 
 
+    //TODO Figure out what to do with partition 0 and check for it
 
     string fpart_command = "fpart";
     string fpart_size = "-s " + size;
@@ -64,7 +68,7 @@ int tar()
     int i;
     string tar_command = "tar";
     string tar_par = "-cvzf"; //compress verbose gzip and use the following filename
-    string tar_file = "Archive";
+
 
 
 
@@ -75,7 +79,7 @@ int tar()
         stringstream out;
         out << i;
         string number_i = out.str();
-        string tar_filename = backupDir + "/" + tar_file + number_i + ".tar.gz";
+        string tar_filename = backupSaveDir + "/" + tar_file + number_i + ".tar.gz";
         string tar_fileList = "-T " + outputFileForFpart + "." + number_i;
 
         string tar = tar_command + " " + tar_par + " " + tar_filename + " " + tar_fileList;
@@ -88,13 +92,111 @@ int tar()
     return 0;
 }
 
+int mkisofs()
+{
+    //Define basic strings
+    string mkisofs_command = "mkisofs";
+    string mkisofs_Volume = "-V Backup";
+    string mkisofs_volset = "-volset";
+    string mkisofs_par = "-r";
 
+
+    int i,j,k,l;
+    //Base file Name
+    string mkisofs_input = ""; // = backupSaveDir + "/" + tar_file + "1" + ".tar.gz";
+    string mkisofs_temp;
+    //5 tar archives a 600 MB for one DVD.
+    //How many DVDs are needed?
+    l = numberOfFpartFiles / 5;
+    //m = numberOfFpartFiles % 5;
+
+    #ifdef DEBUG
+    numberOfFpartFiles = 70;
+    l = 14; // in case fpart() doesnt run
+    cout << "l=" << l << endl;
+
+    #endif
+
+
+
+    for (j=0; j<l; j++)
+    {
+        k = (j * 5);
+
+            // This is for the mkisofs command for the volume iteration
+            stringstream out1;
+            out1 << j + 1;
+            string number_j = out1.str();
+
+        for (i=1; i<6; i++) // split in 5 parts
+        {
+
+            stringstream out;
+            out << i + k;
+            string number_i = out.str();
+            #ifdef DEBUG
+            cout << "i+k=" << i+k << endl;
+            #endif
+            if ((i + k) < numberOfFpartFiles)
+            {
+                mkisofs_input = mkisofs_input + " " + backupSaveDir + "/" + tar_file + number_i + ".tar.gz" ;
+            }
+
+            //mkisofs_temp = mkisofs_input;
+            //mkisofs_input = mkisofs_temp + " " + backupSaveDir + "/" + tar_file + number_i + ".tar.gz" ;
+        }
+
+        string mkisofs = mkisofs_command + " " + mkisofs_Volume + " " + mkisofs_volset + " " + number_j + " " + mkisofs_par + " " + "-o " + mkisofs_outputFile + number_j + ".iso " + mkisofs_input;
+
+        #ifdef DEBUG
+        cout << mkisofs << endl;
+        #endif
+        system(mkisofs.c_str());
+
+
+        //this is for the reset of the mkisofs_input string, otherwise it contains everything of the loop
+       /* stringstream out2;
+        out2 << 6 + k;
+        string number_i = out2.str();
+        mkisofs_input = backupSaveDir + "/" + tar_file + number_i + ".tar.gz" ; // reset */
+        mkisofs_input = "";
+    }
+
+
+    return 0;
+}
+
+
+int dvdisaster()
+{
+    //dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
+
+    string dvdisaster_command = "dvdisaster";
+    string dvdisaster_par = "-mRS02 -n dvd -c -i";
+
+    int i,j;
+    j = numberOfFpartFiles / 5;
+
+    for (i=0; i<j; i++)
+    {
+        stringstream out;
+        out << i + 1; //so that numbers of dvds start at 1
+        string number_i = out.str();
+        string dvdisaster = dvdisaster_command + " " + dvdisaster_par + " " + mkisofs_outputFile + number_i + ".iso" + "-v" ;
+
+        system(dvdisaster.c_str());
+    }
+
+    return 0;
+}
 
 
 int main()
 {
-    fpart();
-    tar();
+    //fpart();
+    //tar();
+    mkisofs();
+    dvdisaster();
 
     return 0;
 }
