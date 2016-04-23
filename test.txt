@@ -2,7 +2,7 @@ insgesamt 28
 drwxr-xr-x 3 florian florian 4096 Apr 23 12:21 bin
 -rw-rw-r-- 1 florian florian 1094 Apr 23 12:19 dbt.cbp
 -rw-rw-r-- 1 florian florian  164 Apr 23 12:25 dbt.depend
--rw-r--r-- 1 florian florian  228 Apr 23 12:21 main.cpp
+-rw-r--r-- 1 florian florian  712 Apr 23 13:07 main.cpp
 drwxr-xr-x 3 florian florian 4096 Apr 23 12:21 obj
--rw-rw-r-- 1 florian florian    0 Apr 23 12:25 test.txt
--rw-rw-r-- 1 florian florian  837 Apr 23 12:25 version.h
+-rw-rw-r-- 1 florian florian    0 Apr 23 13:07 test.txt
+-rw-rw-r-- 1 florian florian  838 Apr 23 13:07 version.h
