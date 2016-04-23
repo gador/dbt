@@ -170,7 +170,13 @@ int mkisofs()
 int dvdisaster()
 {
     //dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
+    #ifdef DEBUG
 
+    numberOfFpartFiles = 70;
+
+
+
+    #endif
     string dvdisaster_command = "dvdisaster";
     string dvdisaster_par = "-mRS02 -n dvd -c -i";
 
@@ -182,7 +188,7 @@ int dvdisaster()
         stringstream out;
         out << i + 1; //so that numbers of dvds start at 1
         string number_i = out.str();
-        string dvdisaster = dvdisaster_command + " " + dvdisaster_par + " " + mkisofs_outputFile + number_i + ".iso" + "-v" ;
+        string dvdisaster = dvdisaster_command + " " + dvdisaster_par + " " + mkisofs_outputFile + number_i + ".iso" + " -v" ;
 
         system(dvdisaster.c_str());
     }
@@ -193,8 +199,8 @@ int dvdisaster()
 
 int main()
 {
-    //fpart();
-    //tar();
+    fpart();
+    tar();
     mkisofs();
     dvdisaster();
 
