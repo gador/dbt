@@ -3,6 +3,10 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iomanip>
+#include <cstdlib>
+#include <libconfig.h++>
+
 
 
 #define DEBUG
@@ -21,6 +25,8 @@ dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
 
 
 using namespace std;
+using namespace libconfig;
+
 
 //TODO Add another directory to backup to
 string backupDir = "/home/florian/data/Bilder";
@@ -29,28 +35,126 @@ string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
 string tar_file = "Archive";
 string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
 
-const char config[] = "url=http://example.com\n"
-                      "file=main.exe\n"
-                      "true=0";
 
 int numberOfFpartFiles;
 
-void readConfigFile()
+int readConfigFile()
 {
-    istringstream is_file(config);
+    Config cfg;
 
-string line;
-while( getline(is_file, line) )
-{
-  istringstream is_line(line);
-  string key;
-  if( getline(is_line, key, '=') )
+    // Read the file. If there is an error, report it and exit.
+  try
   {
-    string value;
-    if( getline(is_line, value) )
-      store_line(key, value);
+    cfg.readFile("example.cfg");
   }
-}
+  catch(const FileIOException &fioex)
+  {
+    cerr << "I/O error while reading file." << endl;
+    return(EXIT_FAILURE);
+  }
+  //catch(const ParseException &pex)
+  //{
+  //  std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+  //            << " - " << pex.getError() << std::endl;
+  //  return(EXIT_FAILURE);
+  //}
+
+  // Get the store name.
+  try
+  {
+    string name = cfg.lookup("name");
+    cout << "Store name: " << name << endl << endl;
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    cerr << "No 'name' setting in configuration file." << endl;
+  }
+
+  const Setting& root = cfg.getRoot();
+
+  // Output a list of all books in the inventory.
+  try
+  {
+    const Setting &books = root["inventory"]["books"];
+    int count = books.getLength();
+
+    cout << setw(30) << left << "TITLE" << "  "
+         << setw(30) << left << "AUTHOR" << "   "
+         << setw(6) << left << "PRICE" << "  "
+         << "QTY"
+         << endl;
+
+    for(int i = 0; i < count; ++i)
+    {
+      const Setting &book = books[i];
+
+      // Only output the record if all of the expected fields are present.
+      string title, author;
+      double price;
+      int qty;
+
+      if(!(book.lookupValue("title", title)
+           && book.lookupValue("author", author)
+           && book.lookupValue("price", price)
+           && book.lookupValue("qty", qty)))
+        continue;
+
+      cout << setw(30) << left << title << "  "
+           << setw(30) << left << author << "  "
+           << '$' << setw(6) << right << price << "  "
+           << qty
+           << endl;
+    }
+    cout << endl;
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    // Ignore.
+  }
+
+  // Output a list of all books in the inventory.
+  try
+  {
+    const Setting &movies = root["inventory"]["movies"];
+    int count = movies.getLength();
+
+    cout << setw(30) << left << "TITLE" << "  "
+         << setw(10) << left << "MEDIA" << "   "
+         << setw(6) << left << "PRICE" << "  "
+         << "QTY"
+         << endl;
+
+    for(int i = 0; i < count; ++i)
+    {
+      const Setting &movie = movies[i];
+
+      // Only output the record if all of the expected fields are present.
+      string title, media;
+      double price;
+      int qty;
+
+      if(!(movie.lookupValue("title", title)
+           && movie.lookupValue("media", media)
+           && movie.lookupValue("price", price)
+           && movie.lookupValue("qty", qty)))
+        continue;
+
+      cout << setw(30) << left << title << "  "
+           << setw(10) << left << media << "  "
+           << '$' << setw(6) << right << price << "  "
+           << qty
+           << endl;
+    }
+    cout << endl;
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    // Ignore.
+  }
+
+  return(EXIT_SUCCESS);
+
+
 }
 
 int fpart()
@@ -226,6 +330,7 @@ int main()
     //tar();
     //mkisofs();
     //dvdisaster();
+    readConfigFile();
 
     return 0;
 }
