@@ -29,8 +29,8 @@ using namespace libconfig;
 
 
 //TODO Add another directory to backup to
-string backupDir = "/home/florian/data/Bilder";
-string backupSaveDir = "/home/florian/data/tmp";
+string backupDir ; //= "/home/florian/data/Bilder";
+string backupSaveDir ; //= "/home/florian/data/tmp";
 string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
 string tar_file = "Archive";
 string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
@@ -41,118 +41,46 @@ int numberOfFpartFiles;
 int readConfigFile()
 {
     Config cfg;
+    bool failure = false;
 
     // Read the file. If there is an error, report it and exit.
   try
   {
-    cfg.readFile("example.cfg");
+    cfg.readFile("dbt.cfg");
   }
   catch(const FileIOException &fioex)
   {
     cerr << "I/O error while reading file." << endl;
     return(EXIT_FAILURE);
   }
-  //catch(const ParseException &pex)
-  //{
-  //  std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-  //            << " - " << pex.getError() << std::endl;
-  //  return(EXIT_FAILURE);
-  //}
 
-  // Get the store name.
   try
   {
-    string name = cfg.lookup("name");
-    cout << "Store name: " << name << endl << endl;
+    string backupDir = cfg.lookup("backup_dir");
+    cout << "Backup Directory: " << backupDir << endl << endl;
   }
   catch(const SettingNotFoundException &nfex)
   {
-    cerr << "No 'name' setting in configuration file." << endl;
+    cerr << "No 'backup_dir' setting in configuration file." << endl;
+    failure = true;
+  }
+    try
+  {
+    string backupSaveDirDir = cfg.lookup("backup_save_dir");
+    cout << "Backup to Directory: " << backupSaveDirDir << endl << endl;
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    cerr << "No 'backup_save_dir' setting in configuration file." << endl;
+    failure = true;
   }
 
-  const Setting& root = cfg.getRoot();
-
-  // Output a list of all books in the inventory.
-  try
-  {
-    const Setting &books = root["inventory"]["books"];
-    int count = books.getLength();
-
-    cout << setw(30) << left << "TITLE" << "  "
-         << setw(30) << left << "AUTHOR" << "   "
-         << setw(6) << left << "PRICE" << "  "
-         << "QTY"
-         << endl;
-
-    for(int i = 0; i < count; ++i)
+    if (failure)
     {
-      const Setting &book = books[i];
-
-      // Only output the record if all of the expected fields are present.
-      string title, author;
-      double price;
-      int qty;
-
-      if(!(book.lookupValue("title", title)
-           && book.lookupValue("author", author)
-           && book.lookupValue("price", price)
-           && book.lookupValue("qty", qty)))
-        continue;
-
-      cout << setw(30) << left << title << "  "
-           << setw(30) << left << author << "  "
-           << '$' << setw(6) << right << price << "  "
-           << qty
-           << endl;
+        return(EXIT_FAILURE);
     }
-    cout << endl;
-  }
-  catch(const SettingNotFoundException &nfex)
-  {
-    // Ignore.
-  }
 
-  // Output a list of all books in the inventory.
-  try
-  {
-    const Setting &movies = root["inventory"]["movies"];
-    int count = movies.getLength();
-
-    cout << setw(30) << left << "TITLE" << "  "
-         << setw(10) << left << "MEDIA" << "   "
-         << setw(6) << left << "PRICE" << "  "
-         << "QTY"
-         << endl;
-
-    for(int i = 0; i < count; ++i)
-    {
-      const Setting &movie = movies[i];
-
-      // Only output the record if all of the expected fields are present.
-      string title, media;
-      double price;
-      int qty;
-
-      if(!(movie.lookupValue("title", title)
-           && movie.lookupValue("media", media)
-           && movie.lookupValue("price", price)
-           && movie.lookupValue("qty", qty)))
-        continue;
-
-      cout << setw(30) << left << title << "  "
-           << setw(10) << left << media << "  "
-           << '$' << setw(6) << right << price << "  "
-           << qty
-           << endl;
-    }
-    cout << endl;
-  }
-  catch(const SettingNotFoundException &nfex)
-  {
-    // Ignore.
-  }
-
-  return(EXIT_SUCCESS);
+    return(EXIT_SUCCESS);
 
 
 }
@@ -326,11 +254,19 @@ int dvdisaster()
 
 int main()
 {
-    //fpart();
-    //tar();
-    //mkisofs();
-    //dvdisaster();
-    readConfigFile();
+    //At first, read configuration file
+
+    if (readConfigFile() == EXIT_FAILURE)
+    {
+        cout << "Something went wrong with reading the configuration file. Aborting."<< endl;
+        return 1;
+    }
+
+    fpart();
+    tar();
+    mkisofs();
+    dvdisaster();
+
 
     return 0;
 }

@@ -1,8 +1,217 @@
 # depslib dependency file v1.0
-1461509620 source:/home/florian/data/Dokumente/encrypted/Privates/Hobby/projects/cpp/dbt/main.cpp
+1461512160 source:/home/florian/data/Dokumente/encrypted/Privates/Hobby/projects/cpp/dbt/main.cpp
 	<iostream>
 	<cstdlib>
 	<fstream>
 	<string>
 	<sstream>
+	<iomanip>
+	<cstdlib>
+	<libconfig.h++>
+
+1304335396 /usr/include/libconfig.h++
+	<stdio.h>
+	<string>
+	<map>
+	<libconfig.h>
+
+1455650610 /usr/include/stdio.h
+	<features.h>
+	<stddef.h>
+	<bits/types.h>
+	<libio.h>
+	<stdarg.h>
+	<bits/stdio_lim.h>
+	<bits/sys_errlist.h>
+	<getopt.h>
+	<bits/stdio.h>
+	<bits/stdio2.h>
+	<bits/stdio-ldbl.h>
+
+1455650574 /usr/include/features.h
+	<bits/predefs.h>
+	<sys/cdefs.h>
+	<gnu/stubs.h>
+
+1455650574 /usr/include/bits/predefs.h
+
+1455650620 /usr/include/sys/cdefs.h
+	<features.h>
+	<bits/wordsize.h>
+
+1455650608 /usr/include/bits/wordsize.h
+
+1455650574 /usr/include/gnu/stubs.h
+	<bits/wordsize.h>
+	<gnu/stubs-32.h>
+	<gnu/stubs-64.h>
+
+1455650790 /usr/include/gnu/stubs-32.h
+
+1455650650 /usr/include/gnu/stubs-64.h
+
+1455650617 /usr/include/bits/types.h
+	<features.h>
+	<bits/wordsize.h>
+	<bits/typesizes.h>
+
+1455650617 /usr/include/bits/typesizes.h
+
+1455650610 /usr/include/libio.h
+	<_G_config.h>
+	<stdarg.h>
+	<sys/cdefs.h>
+	<bits/stdio-lock.h>
+	<shlib-compat.h>
+	<bits/libio-ldbl.h>
+
+1455650610 /usr/include/_G_config.h
+	<bits/types.h>
+	<stddef.h>
+	<wchar.h>
+	<gconv.h>
+
+1455650613 /usr/include/wchar.h
+	<features.h>
+	<stdio.h>
+	<stdarg.h>
+	<bits/wchar.h>
+	<stddef.h>
+	<wctype.h>
+	<xlocale.h>
+	<xlocale.h>
+	<xlocale.h>
+	<wctype.h>
+	<bits/wchar2.h>
+	<bits/wchar-ldbl.h>
+
+1455650613 /usr/include/bits/wchar.h
+
+1455650623 /usr/include/wctype.h
+	<features.h>
+	<bits/types.h>
+	<wchar.h>
+	<endian.h>
+	<xlocale.h>
+
+1455650612 /usr/include/endian.h
+	<features.h>
+	<bits/endian.h>
+	<bits/byteswap.h>
+
+1455650612 /usr/include/bits/endian.h
+
+1455650612 /usr/include/bits/byteswap.h
+	<bits/wordsize.h>
+
+1455650576 /usr/include/xlocale.h
+
+1455650613 /usr/include/bits/wchar2.h
+
+1455650613 /usr/include/bits/wchar-ldbl.h
+
+1455650575 /usr/include/gconv.h
+	<features.h>
+	<wchar.h>
+	<stddef.h>
+
+1455650610 /usr/include/bits/stdio-lock.h
+	<bits/libc-lock.h>
+	<lowlevellock.h>
+
+1455650574 /usr/include/bits/libc-lock.h
+	<pthread.h>
+	<stddef.h>
+	<lowlevellock.h>
+	<tls.h>
+	<pthread-functions.h>
+	<errno.h>
+	<gnu/option-groups.h>
+	<bp-sym.h>
+
+1455650632 /usr/include/pthread.h
+	<features.h>
+	<endian.h>
+	<sched.h>
+	<time.h>
+	<bits/pthreadtypes.h>
+	<bits/setjmp.h>
+	<bits/wordsize.h>
+
+1455650618 /usr/include/sched.h
+	<features.h>
+	<bits/types.h>
+	<stddef.h>
+	<time.h>
+	<bits/sched.h>
+
+1455650615 /usr/include/time.h
+	<features.h>
+	<stddef.h>
+	<bits/time.h>
+	<bits/types.h>
+	<bits/types.h>
+	<bits/types.h>
+	<bits/types.h>
+	<bits/types.h>
+	<xlocale.h>
+
+1455650615 /usr/include/bits/time.h
+	<bits/types.h>
+	<bits/types.h>
+	<bits/timex.h>
+
+1455650616 /usr/include/bits/timex.h
+
+1455650618 /usr/include/bits/sched.h
+
+1455650617 /usr/include/bits/pthreadtypes.h
+	<bits/wordsize.h>
+
+1455650607 /usr/include/bits/setjmp.h
+	<bits/wordsize.h>
+
+1455650608 /usr/include/errno.h
+	<features.h>
+	<bits/errno.h>
+
+1455650608 /usr/include/bits/errno.h
+	<linux/errno.h>
+
+1457653625 /usr/include/linux/errno.h
+	<asm/errno.h>
+
+1457653630 /usr/include/asm/errno.h
+	<asm-generic/errno.h>
+
+1457653625 /usr/include/asm-generic/errno.h
+	<asm-generic/errno-base.h>
+
+1457653625 /usr/include/asm-generic/errno-base.h
+
+1455650644 /usr/include/gnu/option-groups.h
+
+1455650610 /usr/include/bits/libio-ldbl.h
+
+1455650609 /usr/include/bits/stdio_lim.h
+
+1455650610 /usr/include/bits/sys_errlist.h
+
+1455650617 /usr/include/getopt.h
+	<ctype.h>
+
+1455650601 /usr/include/ctype.h
+	<features.h>
+	<bits/types.h>
+	<endian.h>
+	<xlocale.h>
+
+1455650610 /usr/include/bits/stdio.h
+
+1455650610 /usr/include/bits/stdio2.h
+
+1455650610 /usr/include/bits/stdio-ldbl.h
+
+1304335396 /usr/include/libconfig.h
+	<stdio.h>
 
