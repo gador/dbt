@@ -10,17 +10,7 @@
 
 
 #define DEBUG
-
-/*
-fpart -s 644245094 -o fpart_test /home/florian/data/Bilder/
-tar -cvzf fparttest1.tar.gz -T fpart_test.1
-tar -cvzf fparttest2.tar.gz -T fpart_test.2
-tar -cvzf fparttest3.tar.gz -T fpart_test.3
-tar -cvzf fparttest4.tar.gz -T fpart_test.4
-tar -cvzf fparttest5.tar.gz -T fpart_test.5
-mkisofs -V Backup -volset 1 -r -o fparttest.iso fparttest*
-dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
-*/
+//#define DEBUG_VALUES
 
 
 
@@ -28,12 +18,16 @@ using namespace std;
 using namespace libconfig;
 
 
-//TODO Add another directory to backup to
+
 string backupDir ; //= "/home/florian/data/Bilder";
 string backupSaveDir ; //= "/home/florian/data/tmp";
 string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
 string tar_file = "Archive";
 string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
+
+string fpart_size = "644245094"; //default value. Equals 600 MB
+
+string dvd_device = "/dev/dvd"; //default value
 
 
 int numberOfFpartFiles;
@@ -56,8 +50,10 @@ int readConfigFile()
 
   try
   {
-    string backupDir = cfg.lookup("backup_dir");
+    backupDir = (const char *)cfg.lookup("backup_dir"); // const char * needs to be used to force an explicit conversion
+    #ifdef DEBUG
     cout << "Backup Directory: " << backupDir << endl << endl;
+    #endif
   }
   catch(const SettingNotFoundException &nfex)
   {
@@ -66,14 +62,47 @@ int readConfigFile()
   }
     try
   {
-    string backupSaveDirDir = cfg.lookup("backup_save_dir");
-    cout << "Backup to Directory: " << backupSaveDirDir << endl << endl;
+    backupSaveDir = (const char *)cfg.lookup("backup_save_dir");
+    outputFileForFpart = backupSaveDir + "/" + "fpart_test";
+    mkisofs_outputFile = backupSaveDir + "/" + "Backup";
+    #ifdef DEBUG
+    cout << "fPart FileForFpart " << outputFileForFpart << endl << endl;
+    cout << "Backup to Directory: " << backupSaveDir << endl << endl;
+    #endif
   }
   catch(const SettingNotFoundException &nfex)
   {
     cerr << "No 'backup_save_dir' setting in configuration file." << endl;
     failure = true;
   }
+
+    try
+  {
+    fpart_size = (const char *)cfg.lookup("part_size");
+    #ifdef DEBUG
+    cout << "Split into parts of aprox.  " << fpart_size << " B size" << endl << endl;
+    #endif
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    cerr << "No 'part_size' setting in configuration file." << endl;
+    failure = true;
+  }
+     try
+  {
+    dvd_device = (const char *)cfg.lookup("dvd_device");
+
+    #ifdef DEBUG
+    cout << "DVD Device " << dvd_device << endl << endl;
+    #endif
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    cerr << "No 'backup_save_dir' setting in configuration file." << endl;
+    failure = true;
+  }
+
+
 
     if (failure)
     {
@@ -89,17 +118,19 @@ int fpart()
 {
     //fPart configuration
 
-    string size = "644245094";
+    //string fpart_size = "644245094";
 
 
     //TODO Figure out what to do with partition 0 and check for it
 
     string fpart_command = "fpart";
-    string fpart_size = "-s " + size;
+    string fpart_size_command = "-s " + fpart_size;
     string fpart_outputFile = "-o " + outputFileForFpart;
-    string fpart = fpart_command + " " + fpart_size + " " + fpart_outputFile + " " + backupDir;
+    string fpart = fpart_command + " " + fpart_size_command + " " + fpart_outputFile + " " + backupDir;
 
-
+    #ifdef DEBUG
+    cout << "Command fpart: " << fpart << endl;
+    #endif
     // Run fpart
     system(fpart.c_str());
 
@@ -123,11 +154,6 @@ int tar()
     int i;
     string tar_command = "tar";
     string tar_par = "-cvzf"; //compress verbose gzip and use the following filename
-
-
-
-
-
 
     for (i=1; i<numberOfFpartFiles; i++) // starting at 1, since 0 for fpart ist larger than the rest
     {
@@ -165,7 +191,7 @@ int mkisofs()
     l = numberOfFpartFiles / 5;
     //m = numberOfFpartFiles % 5;
 
-    #ifdef DEBUG
+    #ifdef DEBUG_VALUES
     numberOfFpartFiles = 70;
     l = 14; // in case fpart() doesnt run
     cout << "l=" << l << endl;
@@ -224,14 +250,11 @@ int mkisofs()
 
 int dvdisaster()
 {
-    //dvdisaster -mRS02 -n dvd -c -i fparttest.iso -v
+
     #ifdef DEBUG
-
     numberOfFpartFiles = 70;
-
-
-
     #endif
+
     string dvdisaster_command = "dvdisaster";
     string dvdisaster_par = "-mRS02 -n dvd -c -i";
 
@@ -251,6 +274,33 @@ int dvdisaster()
     return 0;
 }
 
+int writeDVD()
+{
+    //growisofs -Z %device -A BAR -V Backup -volset %number -dry-run -r %directory
+    string growisofs_command = "growisofs";
+    string growisofs_device = "-Z " + dvd_device;
+    string growisofs_name = "-A BAR";
+    string growisofs_volume = "-V Backup";
+    string growisofs_volset = "-volset";
+    string growisofs_par = " -dry-run -r";
+
+    int i,j;
+    j = numberOfFpartFiles / 5;
+    for (i=0; i< j; i++)
+    {
+        stringstream out;
+        out << i + 1; //so that numbers of dvds start at 1
+        string number_i = out.str();
+        string growisofs = growisofs_command + " " + growisofs_device + " " + growisofs_name + " " + growisofs_volume + " " + growisofs_volset + " " + number_i + " " + growisofs_par + " " + mkisofs_outputFile + number_i + ".iso";
+        #ifdef DEBUG
+        cout << growisofs << endl;
+        #endif
+    }
+
+
+    return 0;
+}
+
 
 int main()
 {
@@ -262,10 +312,13 @@ int main()
         return 1;
     }
 
+
+
     fpart();
-    tar();
-    mkisofs();
-    dvdisaster();
+    //tar();
+    //mkisofs();
+    //dvdisaster();
+    writeDVD();
 
 
     return 0;
