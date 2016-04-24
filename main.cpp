@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+
 #define DEBUG
 
 /*
@@ -28,7 +29,29 @@ string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
 string tar_file = "Archive";
 string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
 
+const char config[] = "url=http://example.com\n"
+                      "file=main.exe\n"
+                      "true=0";
+
 int numberOfFpartFiles;
+
+void readConfigFile()
+{
+    istringstream is_file(config);
+
+string line;
+while( getline(is_file, line) )
+{
+  istringstream is_line(line);
+  string key;
+  if( getline(is_line, key, '=') )
+  {
+    string value;
+    if( getline(is_line, value) )
+      store_line(key, value);
+  }
+}
+}
 
 int fpart()
 {
@@ -199,10 +222,10 @@ int dvdisaster()
 
 int main()
 {
-    fpart();
-    tar();
-    mkisofs();
-    dvdisaster();
+    //fpart();
+    //tar();
+    //mkisofs();
+    //dvdisaster();
 
     return 0;
 }
