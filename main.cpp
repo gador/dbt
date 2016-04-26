@@ -21,13 +21,15 @@ using namespace libconfig;
 
 string backupDir ; //= "/home/florian/data/Bilder";
 string backupSaveDir ; //= "/home/florian/data/tmp";
-string outputFileForFpart = backupSaveDir + "/" + "fpart_test";
+string outputFileForFpart = backupSaveDir + "/" + "fpart_tmp";
 string tar_file = "Archive";
 string mkisofs_outputFile = backupSaveDir + "/" + "Backup";
 
 string fpart_size = "644245094"; //default value. Equals 600 MB
 
 string dvd_device = "/dev/dvd"; //default value
+
+string config_File = "dbt.cfg";
 
 
 int numberOfFpartFiles;
@@ -43,7 +45,7 @@ int readConfigFile()
     // Read the file. If there is an error, report it and exit.
   try
   {
-    cfg.readFile("dbt.cfg");
+    cfg.readFile(config_File.c_str());
   }
   catch(const FileIOException &fioex)
   {
@@ -282,11 +284,11 @@ int writeDVD()
 {
     //growisofs -Z %device -A BAR -V Backup -volset %number -dry-run -r %directory
     string growisofs_command = "growisofs";
-    string growisofs_device = "-Z " + dvd_device;
+    string growisofs_device = "-Z " + dvd_device + "=";
     string growisofs_name = "-A BAR";
     string growisofs_volume = "-V Backup";
     string growisofs_volset = "-volset";
-    string growisofs_par = " -dry-run -r";
+    string growisofs_par = "-use-the-force-luke=dao -dvd-compat -use-the-force-luke=noload"; // add -dry-run for testing pur
 
     int i,j;
     j = numberOfFpartFiles / 5;
@@ -295,10 +297,11 @@ int writeDVD()
         stringstream out;
         out << i + 1; //so that numbers of dvds start at 1
         string number_i = out.str();
-        string growisofs = growisofs_command + " " + growisofs_device + " " + growisofs_name + " " + growisofs_volume + " " + growisofs_volset + " " + number_i + " " + growisofs_par + " " + mkisofs_outputFile + number_i + ".iso";
+        string growisofs = growisofs_command + " " + growisofs_device + mkisofs_outputFile + number_i + ".iso " + growisofs_par;
         #ifdef DEBUG
         cout << growisofs << endl;
         #endif
+        system(growisofs.c_str());
     }
 
 
@@ -317,14 +320,37 @@ int main()
         return 1;
     }
 
-
-
+    string answer;
+    cout << "" << endl;
+    cout << "Welcome to DBT -- The DVD Backup Tool" << endl;
+    cout << "" << endl;
+    cout << "Acording to the configuration file " << config_File << " we will do the following: "<< endl;
+    cout << "" << endl;
+    cout << "Backup the Folder: " << backupDir << endl;
+    cout << "" << endl;
+    cout << "to the destination: " << backupSaveDir << endl;
+    cout << "" << endl;
+    cout << "Splitting everything into parts of " << fpart_size << " B size "<< endl;
+    cout << "Please be aware that right now, files larger than that are NOT SAVED!" << endl;
+    cout << "These files can be found in the file " << outputFileForFpart << ".0" << endl;
+    cout << "" << endl;
+    cout << "The follwoing steps will be done:" << endl;
+    cout << "TAR the files according to size" << endl;
+    cout << "Create ISO Files with five TAR files per disc " << endl;
+    cout << "Add dvdisater backup files to ISO" << endl;
+    cout << "Write DVDs" << endl;
+    cout << "Are you ok with that? (yes/no)" << endl;
+    cin >> answer;
+    if ( answer == "yes")
+    {
     fpart();
-    tar();
-    mkisofs();
-    dvdisaster();
-    writeDVD();
+    //tar();
+    //mkisofs();
+    //dvdisaster();
 
+    cout << "Will now write DVD: " << endl;
+    writeDVD();
+    }
 
     return 0;
 }
