@@ -13,7 +13,14 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="/usr/include" />
 				</Compiler>
+				<Linker>
+					<Add library="/usr/lib/libconfig++.a" />
+					<Add library="/usr/lib/libconfig++.so" />
+					<Add library="config" />
+					<Add directory="/usr/lib/" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/dbt" prefix_auto="1" extension_auto="1" />
@@ -32,6 +39,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="dbt.cfg" />
+		<Unit filename="example.cfg" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

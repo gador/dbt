@@ -32,6 +32,9 @@ string dvd_device = "/dev/dvd"; //default value
 
 int numberOfFpartFiles;
 
+
+// Switch from system() calls to e.g. fork exec
+
 int readConfigFile()
 {
     Config cfg;
@@ -202,7 +205,7 @@ int mkisofs()
 
     for (j=0; j<l; j++)
     {
-        k = (j * 5);
+        k = (j * 5); //Add 5 every turn of the outer loop
 
             // This is for the mkisofs command for the volume iteration
             stringstream out1;
@@ -218,7 +221,7 @@ int mkisofs()
             #ifdef DEBUG
             cout << "i+k=" << i+k << endl;
             #endif
-            if ((i + k) < numberOfFpartFiles)
+            if ((i + k) < numberOfFpartFiles) //so that we don't try to add files that don't exist
             {
                 mkisofs_input = mkisofs_input + " " + backupSaveDir + "/" + tar_file + number_i + ".tar.gz" ;
             }
@@ -266,6 +269,7 @@ int dvdisaster()
         stringstream out;
         out << i + 1; //so that numbers of dvds start at 1
         string number_i = out.str();
+
         string dvdisaster = dvdisaster_command + " " + dvdisaster_par + " " + mkisofs_outputFile + number_i + ".iso" + " -v" ;
 
         system(dvdisaster.c_str());
@@ -305,7 +309,8 @@ int writeDVD()
 int main()
 {
     //At first, read configuration file
-
+    //TODO Add introduction text
+    //TODO add CLI parameters for configuration file location, backupDir and backupSaveDir
     if (readConfigFile() == EXIT_FAILURE)
     {
         cout << "Something went wrong with reading the configuration file. Aborting."<< endl;
@@ -315,9 +320,9 @@ int main()
 
 
     fpart();
-    //tar();
-    //mkisofs();
-    //dvdisaster();
+    tar();
+    mkisofs();
+    dvdisaster();
     writeDVD();
 
 

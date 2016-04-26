@@ -11,4 +11,10 @@ Right now it relies on dvdisaster, fpart and tar to do its bidding
 
 3) Will it work on my computer?
 
-Not as of right now. It is very alpha and has precoded paths right now
+Under certain conditions. You'll need Code::Blocks IDE to open the project file and to compile it.
+For compilation you'll also need libconfig installed.
+
+4) I have questions or maybe a patch/idea for your project. How can I contact you?
+
+Just send an email to my account. See my GitHub Profile for the email adress.
+
