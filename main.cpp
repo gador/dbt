@@ -10,8 +10,10 @@
 #include "version.h"
 
 
-
+//Are we debugging?
 #define DEBUG
+
+// In case we skip certain functions that provde values
 //#define DEBUG_VALUES
 
 
@@ -70,7 +72,7 @@ int readConfigFile()
     try
     {
         backupSaveDir = (const char *)cfg.lookup("backup_save_dir");
-        outputFileForFpart = backupSaveDir + "/" + "fpart_test";
+        outputFileForFpart = backupSaveDir + "/" + "fpart_tmp";
         mkisofs_outputFile = backupSaveDir + "/" + "Backup";
 #ifdef DEBUG
         cout << "fPart FileForFpart " << outputFileForFpart << endl << endl;
@@ -258,7 +260,7 @@ int mkisofs()
 int dvdisaster()
 {
 
-#ifdef DEBUG
+#ifdef DEBUG_VALUES
     numberOfFpartFiles = 70;
 #endif
 
@@ -334,6 +336,8 @@ int main(int argc, char* argv[])
         {
             backupDir = argv[1];
             backupSaveDir = argv[2];
+            outputFileForFpart = backupSaveDir + "/" + "fpart_tmp";
+            mkisofs_outputFile = backupSaveDir + "/" + "Backup";
 
         }
         if (argc > 3)
@@ -369,7 +373,7 @@ int main(int argc, char* argv[])
     cin >> answer;
     if ( answer == "yes")
     {
-        //fpart();
+        fpart();
         //tar();
         //mkisofs();
         //dvdisaster();
