@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <libconfig.h++>
 
+#include "version.h"
+
 
 
 #define DEBUG
@@ -302,6 +304,7 @@ int writeDVD()
         cout << growisofs << endl;
         #endif
         system(growisofs.c_str());
+        cout << "Please enter next disc (" << i+2 << "/" << j-1 << ")." << endl;
     }
 
 
@@ -309,10 +312,10 @@ int writeDVD()
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
     //At first, read configuration file
-    //TODO Add introduction text
+
     //TODO add CLI parameters for configuration file location, backupDir and backupSaveDir
     if (readConfigFile() == EXIT_FAILURE)
     {
@@ -320,12 +323,35 @@ int main()
         return 1;
     }
 
+    if (argc > 1)
+    {
+        if (argc < 3) // Too few arguments
+        {
+            cerr << "Usage: " << argv[0] << " BackupDir " << " BackupSaveDir " << endl;
+            return 1;
+        }
+        if ( argc == 3)
+        {
+            backupDir = argv[1];
+            backupSaveDir = argv[2];
+
+        }
+        if (argc > 3)
+        {
+            cerr << "Usage: " << argv[0] << " BackupDir " << " BackupSaveDir " << endl;
+            return 1;
+        }
+    }
     string answer;
     cout << "" << endl;
     cout << "Welcome to DBT -- The DVD Backup Tool" << endl;
+    cout << "Version: " << AutoVersion::FULLVERSION_STRING << endl;
     cout << "" << endl;
-    cout << "Acording to the configuration file " << config_File << " we will do the following: "<< endl;
-    cout << "" << endl;
+    if (!argc == 3)
+    {
+        cout << "Acording to the configuration file " << config_File << " we will do the following: "<< endl;
+        cout << "" << endl;
+    }
     cout << "Backup the Folder: " << backupDir << endl;
     cout << "" << endl;
     cout << "to the destination: " << backupSaveDir << endl;
@@ -343,13 +369,13 @@ int main()
     cin >> answer;
     if ( answer == "yes")
     {
-    fpart();
+    //fpart();
     //tar();
     //mkisofs();
     //dvdisaster();
 
     cout << "Will now write DVD: " << endl;
-    writeDVD();
+    //writeDVD();
     }
 
     return 0;
